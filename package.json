@@ -1,0 +1,24 @@
+{
+  "name": "react-beejee",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "start:react": "cd client && npm start",
+    "build:react": "cd client && npm build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "form-data": "^4.0.0",
+    "morgan": "^1.10.0",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.9",
+    "validator": "^13.5.2"
+  }
+}
