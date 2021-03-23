@@ -45,7 +45,7 @@ module.exports = {
     try {
       const { login, password } = req.body;
       if (!login.toString() || login.toString().length < 3 || login.toString().length > 24) {
-        return res.status(400).send({
+        return res.json({
           error: {
             code: 2,
             message: 'Логин указан не верно!'
@@ -53,7 +53,7 @@ module.exports = {
         });
       }
       if (!password.toString() || password.toString().length < 3 || password.toString().length > 30) {
-        return res.status(400).send({
+        return res.json({
           error: {
             code: 3,
             message: 'Пароль указан не верно!'
@@ -62,7 +62,7 @@ module.exports = {
       }
       const { error } = authenticateSchema.validate({ login, password });
       if (error) {
-        return res.status(400).send({
+        return res.json({
           error: {
             code: 4,
             message: error.message
@@ -71,21 +71,21 @@ module.exports = {
       }
       const account = await getAccountByUsername(login);
       if (!await isPasswordsEquals(password, account.password)) {
-        return res.status(401).send({
+        return res.json({
           error: {
             code: 1,
             message: 'Логин или пароль указан не верно!'
           }
         });
       }
-      res.status(200).send({
+      res.json({
         id: account.id,
         token: generateToken(account.id)
       });
     }
     catch (e) {
       if (e instanceof PropertyError) {
-        return res.status(401).send({
+        return res.json({
           error: {
             code: 10,
             message: e.message

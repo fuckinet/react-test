@@ -5,9 +5,12 @@ import { connect } from 'react-redux';
 
 import store from './store'
 import { AddTaskModal } from './features/AddTaskModal';
+import { LoginModal } from './features/LoginModal';
 import { fetchTasks } from './features/tasksSlice'
+import { logout } from './features/loginSlice'
+import {Button} from "react-bootstrap";
 
-const RemotePagination = ({ data, page, sizePerPage, onTableChange, totalSize, onSortChange }) => {
+const RemotePagination = ({ data, page, sizePerPage, onTableChange, totalSize, onSortChange, defaultSorted }) => {
   const columns = [
     {
       dataField: 'id',
@@ -53,6 +56,7 @@ const RemotePagination = ({ data, page, sizePerPage, onTableChange, totalSize, o
         keyField="id"
         data={ data }
         columns={ columns }
+        defaultSorted={ defaultSorted }
         pagination={ paginationFactory({
           page, sizePerPage, totalSize, sizePerPageList: []
         })}
@@ -81,14 +85,17 @@ class List extends Component {
     store.dispatch(fetchTasks(page, this.state.sort, this.state.sortDirection));
   }
 
-
   handleSortChange(sort, sortDirection) {
     this.setState({ sort, sortDirection });
     store.dispatch(fetchTasks(this.state.page, sort, sortDirection));
   }
 
+  handleLogout() {
+    store.dispatch(logout);
+  }
+
   render() {
-    const { tasks: list } = this.props;
+    const { tasks: list, auth } = this.props;
     const paginationOption = {
       custom: true,
       totalSize: Number(list.total_task_count)
@@ -96,7 +103,16 @@ class List extends Component {
     return (
       <div className="App">
         <h1>Список задач</h1>
-        <AddTaskModal />
+        <div className="nav-buttons">
+          <AddTaskModal />
+        </div>
+        {!auth.token ? (<div className="nav-buttons">
+          <LoginModal />
+        </div>) : (<div className="nav-buttons">
+          <Button variant="danger" onClick={this.handleLogout}>
+            Выйти
+          </Button>
+        </div>)}
         {list && list.tasks && list.tasks.length ? (
           <div className="tasks-list">
             <RemotePagination
@@ -123,7 +139,8 @@ class List extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  tasks: state.tasks
+  tasks: state.tasks,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps)(List);

@@ -43,3 +43,7 @@ code {
 .dropup {
   position: relative;
 }
+
+.nav-buttons {
+  margin: 5px;
+}
