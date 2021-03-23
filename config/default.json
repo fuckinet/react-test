@@ -1,0 +1,11 @@
+{
+  "Application": {
+    "dbConnection": {
+      "database": "react_test",
+      "user": "root",
+      "password": "",
+      "host": "127.0.0.1"
+    },
+    "jwtSecret": "secret"
+  }
+}
