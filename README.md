@@ -13,5 +13,5 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### `npm run build:react`
 
-Builds the app for production to the `build` folder.<br />
+Builds the app for production to the `client/build` folder.<br />
 Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
