@@ -8,7 +8,8 @@ const authCheck = require('./authCheck');
 const attachUser = require('./attachUser');
 
 const tasksRoutes = require('./routes/tasks');
-const AuthRoute = require('./routes/auth');
+const authRoute = require('./routes/auth');
+const logoutRoute = require('./routes/logout');
 
 const app = express();
 
@@ -21,10 +22,9 @@ app.use(bodyParser.json());
 
 app.get('/api/tasks', tasksRoutes.get);
 app.post('/api/tasks', tasksRoutes.post);
-app.post('/api/auth', AuthRoute.post);
-app.put('/api/tasks/:id', authCheck, attachUser, (req, res) => {
-  // TODO
-});
+app.post('/api/auth', authRoute.post);
+app.post('/api/logout', authCheck, attachUser, logoutRoute.post);
+app.put('/api/tasks/:id', authCheck, attachUser, tasksRoutes.put);
 
 app.get('*', (req,res) =>{
   res.sendFile(path.join(`${__dirname}/client/build/index.html`));

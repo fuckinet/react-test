@@ -38,7 +38,11 @@ export function auth(login, password) {
   }
 }
 
-export function logout(dispatch) {
+export async function logout(dispatch, getState) {
+  const { auth: { token } } = getState();
+  await Api.post('/logout', {}, {
+    Authorization: `Bearer ${token}`
+  });
   toast('Вы успешно вышли из аккаунта!');
   localStorage.removeItem('auth_id');
   localStorage.removeItem('auth_token');

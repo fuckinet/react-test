@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
-const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const jwtSecret = require('config').get('Application.jwtSecret');
+const FormData = require('form-data');
 
+const apiHandler = require('../apiHandler');
 const Users = require('../db/models/users');
 const { PropertyError } = require('../utils');
 
@@ -20,14 +20,6 @@ async function getAccountByUsername(login) {
 }
 async function isPasswordsEquals(password, hash) {
   return await bcrypt.compare(password, hash);
-}
-function generateToken(id) {
-  const data = {
-    id
-  };
-  const expiration = '6h';
-
-  return jwt.sign({ data }, jwtSecret, { expiresIn: expiration });
 }
 
 const authenticateSchema = Joi.object().keys({
@@ -48,7 +40,7 @@ module.exports = {
         return res.json({
           error: {
             code: 2,
-            message: 'Логин указан не верно!'
+            message: 'Логин или пароль указан не верно!'
           }
         });
       }
@@ -56,7 +48,7 @@ module.exports = {
         return res.json({
           error: {
             code: 3,
-            message: 'Пароль указан не верно!'
+            message: 'Логин или пароль указан не верно!'
           }
         });
       }
@@ -69,6 +61,18 @@ module.exports = {
           }
         });
       }
+      const form = new FormData();
+      form.append('username', login);
+      form.append('password', password);
+      const { data } = await apiHandler.post('/login', form, form.getHeaders());
+      if (data.status !== 'ok') {
+        return res.json({
+          error: {
+            code: 5,
+            message: 'Логин или пароль указан не верно!'
+          }
+        });
+      }
       const account = await getAccountByUsername(login);
       if (!await isPasswordsEquals(password, account.password)) {
         return res.json({
@@ -78,9 +82,12 @@ module.exports = {
           }
         });
       }
+      account.update({
+        token: data.message.token
+      });
       res.json({
         id: account.id,
-        token: generateToken(account.id)
+        token: account.token
       });
     }
     catch (e) {

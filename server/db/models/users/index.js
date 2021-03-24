@@ -18,6 +18,11 @@ Users.init({
     type: sequelize.CHAR(64),
     allowNull: false
   },
+  token: {
+    type: sequelize.TEXT,
+    allowNull: false,
+    defaultValue: ''
+  },
   admin: {
     type: sequelize.INTEGER(1),
     allowNull: true

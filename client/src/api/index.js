@@ -9,8 +9,12 @@ class ApiHandler {
     return axios.get(`${this.baseUrl}${route}`, {params});
   }
 
-  post(route, data = {}) {
-    return axios.post(`${this.baseUrl}${route}`, data);
+  post(route, data = {}, headers = {}) {
+    return axios.post(`${this.baseUrl}${route}`, data, { headers });
+  }
+
+  put(route, data = {}, headers = {}) {
+    return axios.put(`${this.baseUrl}${route}`, data, { headers });
   }
 }
 

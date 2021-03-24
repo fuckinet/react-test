@@ -16,6 +16,15 @@ export default function tasksReducer(state = initialState, action) {
     case 'tasks/added': {
       return {...state, tasks: [...state.tasks, action.payload]}
     }
+    case 'tasks/updated': {
+      for (let i = 0; i < state.tasks.length; i += 1) {
+        const task = state.tasks[i];
+        if (task.id === action.payload.id) {
+          task[action.payload.field] = action.payload.newValue;
+        }
+      }
+      return {...state};
+    }
     default:
       return state
   }
@@ -27,6 +36,32 @@ export function fetchTasks(page, sort, sortDirection) {
       page, sort, sortDirection
     });
     dispatch({ type: 'tasks/loaded', payload: data })
+  }
+}
+
+export function updateTask(id, field, newValue) {
+  return async function fetchTasksThunk(dispatch, getState) {
+    try {
+      const { auth: { token } } = getState();
+      const { data } = await Api.put(`/tasks/${id}`, {
+        field, newValue
+      }, {
+        Authorization: `Bearer ${token}`
+      });
+      if (data.error) {
+        return toast(data.error.message);
+      }
+      toast('Изменения сохранены!');
+      dispatch({ type: 'tasks/updated', payload: data })
+    }
+    catch (e) {
+      if (e.response && e.response.status === '401') {
+        toast('Ошибка авторизации!');
+      }
+      else {
+        toast('Произошла ошибка редактировании!');
+      }
+    }
   }
 }
 

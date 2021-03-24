@@ -1,13 +1,7 @@
-const jwt = require('express-jwt');
-const jwtSecret = require('config').get('Application.jwtSecret');
-
-module.exports = jwt({
-  secret: jwtSecret,
-  userProperty: 'token',
-  algorithms: ['HS256'],
-  getToken(req) {
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-      return req.headers.authorization.split(' ')[1];
-    }
+module.exports = async (req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+    req.token = req.headers.authorization.split(' ')[1];
+    return next();
   }
-});
+  res.status(401).end('Токен не указан!')
+};

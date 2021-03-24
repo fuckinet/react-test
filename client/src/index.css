@@ -47,3 +47,9 @@ code {
 .nav-buttons {
   margin: 5px;
 }
+
+.nav-buttons .alert {
+  width: 80vw;
+  margin: 15px auto;
+  text-align: left;
+}

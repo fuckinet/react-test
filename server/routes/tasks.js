@@ -6,7 +6,7 @@ const utils = require('../utils');
 
 module.exports = {
   async post(req, res) {
-    const { name: _name, email, text: _text } = req.body;
+    const { name: _name = '', email = '', text: _text = '' } = req.body;
     if (!_name && !email && !_text) {
       return res.json({
         error: {
@@ -29,7 +29,6 @@ module.exports = {
     form.append('text', text);
     const result = await apiHandler.post('/create', form, form.getHeaders());
     const { data } = result;
-    console.log(data);
     if (data.status === 'ok') {
       res.json(data.message);
     }
@@ -56,5 +55,44 @@ module.exports = {
         }
       });
     }
+  },
+  async put(req, res) {
+    if (!req.currentUser.admin) {
+      return res.json({
+        error: {
+          message: 'У Вас нет доступа!'
+        }
+      });
+    }
+    const { id } = req.params;
+    const { field: _field, newValue: _newValue } = req.body;
+    const field = utils.htmlEscape(_field);
+    const newValue = utils.htmlEscape(_newValue);
+    if (!id && !field && !newValue) {
+      return res.json({
+        error: {
+          message: 'Произошла ошибка! Не выбраны поля редактирования!'
+        }
+      });
+    }
+    if (field !== 'text' && field !== 'status') {
+      return res.json({
+        error: {
+          message: 'Произошла ошибка! Указанное поле нельзя отредактировать!'
+        }
+      });
+    }
+    const form = new FormData();
+    form.append(field, newValue);
+    form.append('token', req.currentUser.token);
+    const { data } = await apiHandler.post(`/edit/${id}`, form, form.getHeaders());
+    if (data.status !== 'ok') {
+      return res.json({
+        error: {
+          message: 'Произошла ошибка при обновлении задачи!'
+        }
+      });
+    }
+    res.json({ id: parseInt(id, 10), field, newValue });
   }
 };

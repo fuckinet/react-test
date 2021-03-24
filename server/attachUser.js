@@ -2,17 +2,17 @@ const { Op } = require('sequelize');
 
 const Users = require('./db/models/users');
 
-async function getAccountById(id) {
+async function getAccountByToken(token) {
   return await Users.findOne({
     where: {
-      id: { [Op.eq]: id }
+      token: { [Op.eq]: token }
     }
   });
 }
 
 module.exports = async (req, res, next) => {
-  const decodedTokenData = req.token;
-  const userRecord = await getAccountById(decodedTokenData.data.id);
+  const { token } = req;
+  const userRecord = await getAccountByToken(token);
 
   req.currentUser = userRecord;
 

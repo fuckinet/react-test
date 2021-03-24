@@ -17,6 +17,7 @@ export function AddTaskModal() {
   const handleShow = () => setState({ show: true });
   const handleSubmit = () => {
     dispatch(createTask(state.name, state.email, state.text));
+    handleClose();
   };
 
   return (
